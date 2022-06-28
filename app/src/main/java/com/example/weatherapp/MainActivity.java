@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
+    //initializing the widgets used fro UI
     EditText searchCity;
     TextView cityTv;
     TextView countryTv;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //assigning the id's to the widgets
         searchCity = findViewById(R.id.searchCity);
         cityTv = findViewById(R.id.cityTv);
         countryTv = findViewById(R.id.countryTv);
@@ -70,30 +72,33 @@ public class MainActivity extends AppCompatActivity {
         citySearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getWeatherInfo();
+                getWeatherInfo(); //function which has all the weather info code
             }
         });
 
 
     }
 
-    private void getCurrentLocationInfo() {
+    private void getCurrentLocationInfo() { // function used to get the current location of the user
 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                String latitude = String.valueOf(location.getLatitude());
                String longitude = String.valueOf(location.getLongitude());
-                String url = "https://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon=" + longitude+ "&appid=55419c2eda7b4623561d4635ea1cb725";
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                String url = "https://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon=" + longitude+ "&appid=55419c2eda7b4623561d4635ea1cb725";/*open weather api*/
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() { //volley library used to process the API
                     @Override
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            String country = jsonObject.getJSONObject("sys").getString("country");
+                            // getting the JSON data 
+                            String country = jsonObject.getJSONObject("sys").getString("country"); 
                             countryTv.setText(country);
+                            
                             String city = jsonObject.getString("name");
                             cityTv.setText(city);
+                            
                             String latitude = jsonObject.getJSONObject("coord").getString("lat");
                             String longitude = jsonObject.getJSONObject("coord").getString("lon");
                             latitudeTv.setText(latitude + "°N");
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                             JSONArray jsonArray = jsonObject.getJSONArray("weather");
                             JSONObject jsonObject1 = jsonArray.getJSONObject(0);
                             String icon = jsonObject1.getString("icon");
-                            Picasso.get().load("https://openweathermap.org/img/wn/"+ icon+ "@2x.png").into(conditionIv);
+                            Picasso.get().load("https://openweathermap.org/img/wn/"+ icon+ "@2x.png").into(conditionIv); //picasso library used so as to get the icon as weather condition
 
                             String pressure = jsonObject.getJSONObject("main").getString("pressure");
                             pressureTv.setText(pressure +" hpa");
@@ -137,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
                 requestQueue.add(stringRequest);
+                //permissions for user to make the use of GPS to fetch the current lo
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -211,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         requestQueue.add(stringRequest);
     }
-
+    // code will be executed if user gives the permission fro current location
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
